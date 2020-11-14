@@ -78,6 +78,7 @@ public class PagerFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 parentActivity.updateText(pageviewlist.get(position).webber.getUrl());
+                parentActivity.updatingPageView(pageviewlist.get(position));
             }
 
             @Override
@@ -106,7 +107,7 @@ public class PagerFragment extends Fragment {
 
     public interface fragmentFetch {
         void addingPageView(PageViewerFragment fragment);
-
+        void updatingPageView(PageViewerFragment newCurrentView);
         void updateText(String url);
     }
 

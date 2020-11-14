@@ -64,6 +64,7 @@ public class PageListFragment extends Fragment {
                 Toast toast = Toast.makeText(getActivity(), "You clicked on page " + position, Toast.LENGTH_LONG);
                 toast.show();
                 parentActivityInterface.listerJam(position);
+                parentActivityInterface.updatingPageViewList(position);
             }
         });
 //        setRetainInstance(true);
@@ -96,5 +97,6 @@ public class PageListFragment extends Fragment {
 
     interface listJam {
         void listerJam(int index);
+        void updatingPageViewList(int pos);
     }
 }

@@ -88,6 +88,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
             pagel.UpdateURL(titleKey);
         }
         addingPageView(pagev);
+        pager.viewPager.setCurrentItem(titleKey.size() - 1);
     }
 
 
@@ -125,6 +126,16 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         if (pager.pageviewlist.size() > 0) {
             pagev.WebViewLoad(url);
         }
+    }
+
+    @Override
+    public void updatingPageView(PageViewerFragment newCurrentView) {
+        pagev = newCurrentView;
+    }
+
+    @Override
+    public void updatingPageViewList(int pos){
+        pagev = pager.pageviewlist.get(pos);
     }
 
     @Override
