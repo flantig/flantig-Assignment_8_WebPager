@@ -5,8 +5,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class BrowserActivity extends AppCompatActivity implements PageControlFragment.GOBack, PageViewerFragment.Wave, PagerFragment.fragmentFetch, BrowserControlFragment.makeNew, PageListFragment.listJam {
@@ -16,7 +28,12 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     PageListFragment pagel = new PageListFragment();
     PagerFragment pager = new PagerFragment();
     ArrayList<String> titleKey = new ArrayList<>();
+    FileInputStream stream;
+    BufferedReader reader;
     Fragment tempFrag;
+    File urlFile;
+    File titleFile;
+    private static final int REQ_CODE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +69,10 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
                         .add(R.id.browser_control, pageb)
                         .commit();
             }
+
         }
+
+
 
 
         if ((tempFrag = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment) {
@@ -78,6 +98,24 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
     }
 
+    // This method is called when the second activity finishes
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Check that it is the SecondActivity with an OK result
+        if (requestCode == REQ_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                // Get String data from Intent
+                int urlPos = data.getIntExtra("urlPOS", 0);
+                loadURL(pageb.bookmarkURLs.get(urlPos));
+
+            }
+        }
+    }
+
+
     @Override
     public void createFragment() {
 
@@ -91,6 +129,36 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         pager.viewPager.setCurrentItem(titleKey.size() - 1);
     }
 
+    @Override
+    public void startBookmarkActivity() {
+        Intent intent = new Intent(BrowserActivity.this, BookmarkActivity.class);
+        intent.putExtra("titles", pageb.bookmarkTitles);
+        intent.putExtra("urls", pageb.bookmarkURLs);
+        startActivityForResult(intent, REQ_CODE);
+    }
+
+    public void writingToFile (String filename, String toBeWritten) throws IOException {
+        File file = new File(getFilesDir(), filename);
+        FileWriter writer = new FileWriter(file, true);
+        BufferedWriter bw = new BufferedWriter(writer);
+        bw.append(toBeWritten);
+        bw.newLine();
+        bw.flush();
+        bw.close();
+    }
+
+    @Override
+    public void addBookmark() throws IOException {
+        if (pagev.webber != null) {
+
+            writingToFile("url.txt", pagev.webber.getUrl());
+            writingToFile("title.txt", pagev.webber.getTitle());
+            pageb.UpdateURL("url.txt", "title.txt");
+
+
+        }
+
+    }
 
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -134,7 +202,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     }
 
     @Override
-    public void updatingPageViewList(int pos){
+    public void updatingPageViewList(int pos) {
         pagev = pager.pageviewlist.get(pos);
     }
 
@@ -150,4 +218,5 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
             pagel.UpdateURL(titleKey);
         }
     }
+
 }

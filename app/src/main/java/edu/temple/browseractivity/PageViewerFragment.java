@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.core.util.PatternsCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -23,7 +25,7 @@ import android.webkit.WebViewClient;
 import java.util.regex.Pattern;
 
 
-public class PageViewerFragment extends Fragment {
+public class PageViewerFragment extends Fragment implements Parcelable {
     WebView webber;
     Wave parentActivityInterface;
     String urlKey = "";
@@ -32,6 +34,34 @@ public class PageViewerFragment extends Fragment {
     public PageViewerFragment() {
 
     }
+
+    protected PageViewerFragment(Parcel in) {
+        urlKey = in.readString();
+        index = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(urlKey);
+        dest.writeInt(index);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PageViewerFragment> CREATOR = new Creator<PageViewerFragment>() {
+        @Override
+        public PageViewerFragment createFromParcel(Parcel in) {
+            return new PageViewerFragment(in);
+        }
+
+        @Override
+        public PageViewerFragment[] newArray(int size) {
+            return new PageViewerFragment[size];
+        }
+    };
 
     @Override
     public void onAttach(@NonNull Context context) {
