@@ -43,6 +43,7 @@ public class BrowserControlFragment extends Fragment {
 
         if (context instanceof PageViewerFragment.Wave) {
             parentActivityInterface = (BrowserControlFragment.makeNew) context;
+
         } else {
             throw new RuntimeException("You must implement ButtonClickInterface to attach this fragment");
         }

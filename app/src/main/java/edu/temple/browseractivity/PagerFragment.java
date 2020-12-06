@@ -24,7 +24,7 @@ public class PagerFragment extends Fragment {
     ViewPager viewPager;
     ArrayList<PageViewerFragment> pageviewlist;
     float thresholdOffset;
-    FragmentAdapter fragAdapter;
+    FragmentAdapter fragAdapter ;
     fragmentFetch parentActivity;
 
     public PagerFragment() {
@@ -50,7 +50,7 @@ public class PagerFragment extends Fragment {
         if (savedInstanceState != null) {
             pageviewlist = (ArrayList<PageViewerFragment>) savedInstanceState.getSerializable("fragments_key");
         } else {
-            pageviewlist = new ArrayList<PageViewerFragment>();
+            pageviewlist = new ArrayList<>();
         }
     }
 
@@ -95,20 +95,24 @@ public class PagerFragment extends Fragment {
 
         if (context instanceof PagerFragment.fragmentFetch) {
             parentActivity = (PagerFragment.fragmentFetch) context;
+
         } else {
             throw new RuntimeException("You must implement ButtonClickInterface to attach this fragment");
         }
     }
 
     public void addingPageView(PageViewerFragment fragment) {
-        pageviewlist.add(fragment);
-        fragAdapter.notifyDataSetChanged();
+
+            pageviewlist.add(fragment);
+            fragAdapter.notifyDataSetChanged();
+
     }
 
     public interface fragmentFetch {
         void addingPageView(PageViewerFragment fragment);
         void updatingPageView(PageViewerFragment newCurrentView);
         void updateText(String url);
+        void createFragment();
     }
 
 }

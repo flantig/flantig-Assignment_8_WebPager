@@ -101,7 +101,8 @@ public class BookmarkAdapter extends BaseAdapter {
     public void deleteLine(int pos, File file) throws IOException {
         stream = new FileInputStream(file);
         reader = new BufferedReader(new InputStreamReader(stream));
-        FileWriter writer = new FileWriter(file, true);
+        File temp = new File(context.getFilesDir(), "temp.txt");
+        FileWriter writer = new FileWriter(temp, true);
         BufferedWriter bw = new BufferedWriter(writer);
 
         String currentLine;
@@ -109,13 +110,17 @@ public class BookmarkAdapter extends BaseAdapter {
 
         while ((currentLine = reader.readLine()) != null) {
             count++;
-            continue;
-//            if (count == pos) {
-//                continue;
-//            }
-//            writer.write(currentLine + System.getProperty("line.separator"));
+            if (count == pos) {
+                continue;
+            }
+            bw.append(currentLine);
+
         }
         writer.close();
         reader.close();
+        file = file.getAbsoluteFile();
+        temp = temp.getAbsoluteFile();
+        file.delete();
+        temp.renameTo(file);
     }
 }

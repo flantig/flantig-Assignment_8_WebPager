@@ -1,12 +1,17 @@
 package edu.temple.browseractivity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -35,15 +40,15 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     File titleFile;
     private static final int REQ_CODE = 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
-            this.getSupportActionBar().hide();
-        } catch (NullPointerException e) {
-        }
-
+        Toolbar toolbar = findViewById(R.id.toolbarMain);
+        setSupportActionBar(toolbar);
+        Intent intent = getIntent();
+        String action = intent.getAction();
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState != null) {
@@ -70,9 +75,8 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
                         .commit();
             }
 
+
         }
-
-
 
 
         if ((tempFrag = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment) {
@@ -96,7 +100,26 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         }
 
 
+        if (Intent.ACTION_SEND.equals(action)) {
+            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
+            pageb.parentActivityInterface.createFragment(); //THIS CREATES THE URL PAGE
+            pagev.webber.loadUrl(url);
+            Toast toast = Toast.makeText(this, url, Toast.LENGTH_LONG);
+            toast.show();
+        }
+
+
     }
+
+    public void handleSend(Intent intent, String action) {
+        if (Intent.ACTION_SEND.equals(action)) {
+            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+            Toast toast = Toast.makeText(this, url, Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
 
     // This method is called when the second activity finishes
     @Override
@@ -109,12 +132,34 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
                 // Get String data from Intent
                 int urlPos = data.getIntExtra("urlPOS", 0);
+
                 loadURL(pageb.bookmarkURLs.get(urlPos));
+
 
             }
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.share && pagev.webber != null) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, pagev.webber.getUrl());
+            sendIntent.setType("text/plain");
+
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
+        }
+        return true;
+    }
 
     @Override
     public void createFragment() {
@@ -137,7 +182,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         startActivityForResult(intent, REQ_CODE);
     }
 
-    public void writingToFile (String filename, String toBeWritten) throws IOException {
+    public void writingToFile(String filename, String toBeWritten) throws IOException {
         File file = new File(getFilesDir(), filename);
         FileWriter writer = new FileWriter(file, true);
         BufferedWriter bw = new BufferedWriter(writer);
