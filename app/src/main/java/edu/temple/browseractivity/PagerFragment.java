@@ -86,6 +86,8 @@ public class PagerFragment extends Fragment {
 
             }
         });
+
+        parentActivity.intentListener();
         return view;
     }
 
@@ -112,7 +114,7 @@ public class PagerFragment extends Fragment {
         void addingPageView(PageViewerFragment fragment);
         void updatingPageView(PageViewerFragment newCurrentView);
         void updateText(String url);
-        void createFragment();
+        void intentListener();
     }
 
 }

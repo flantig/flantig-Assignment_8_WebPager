@@ -36,6 +36,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     FileInputStream stream;
     BufferedReader reader;
     Fragment tempFrag;
+    String intentURL;
     File urlFile;
     File titleFile;
     private static final int REQ_CODE = 0;
@@ -100,25 +101,9 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         }
 
 
-        if (Intent.ACTION_SEND.equals(action)) {
-            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-            pageb.parentActivityInterface.createFragment(); //THIS CREATES THE URL PAGE
-            pagev.webber.loadUrl(url);
-            Toast toast = Toast.makeText(this, url, Toast.LENGTH_LONG);
-            toast.show();
-        }
-
 
     }
 
-    public void handleSend(Intent intent, String action) {
-        if (Intent.ACTION_SEND.equals(action)) {
-            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-
-            Toast toast = Toast.makeText(this, url, Toast.LENGTH_LONG);
-            toast.show();
-        }
-    }
 
 
     // This method is called when the second activity finishes
@@ -159,6 +144,29 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
             startActivity(shareIntent);
         }
         return true;
+    }
+
+    @Override
+    public void intentListener() {
+        Intent intent = getIntent();
+        String url = intent.getDataString();
+
+        if (url != null) {
+            if (url.startsWith("http://")) {
+                url = url.replace("http://", "https://");
+            }
+            createFragment();
+            intentURL = url;
+            Toast toast = Toast.makeText(this, url, Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
+    @Override
+    public void checkStoredIntent(int index){
+        if(intentURL != null){
+            pager.pageviewlist.get(index).webber.loadUrl(intentURL);
+        }
     }
 
     @Override

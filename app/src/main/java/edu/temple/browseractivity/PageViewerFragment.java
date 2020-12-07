@@ -108,7 +108,7 @@ public class PageViewerFragment extends Fragment implements Parcelable {
         });
 
 
-
+        parentActivityInterface.checkStoredIntent(index);
         return webv;
     }
 
@@ -178,6 +178,7 @@ public class PageViewerFragment extends Fragment implements Parcelable {
     interface Wave { //ROCK SHOOT
         void updateText(String url);
         void updateTitle(String url, int index);
+        void checkStoredIntent(int index);
     }
 
 }
